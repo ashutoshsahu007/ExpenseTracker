@@ -52,6 +52,8 @@ const Auth = () => {
         });
       })
       .then((data) => {
+        console.log(data);
+        isLogin && authCtx.login(data.idToken);
         isLogin && navigate("/expense");
       })
       .catch((error) => {
