@@ -56,7 +56,7 @@ const Auth = () => {
       .then((data) => {
         console.log(data);
         isLogin && authCtx.login(data.idToken);
-        isLogin && navigate("/expense");
+        isLogin && navigate("/verify");
       })
       .catch((error) => {
         alert(error.message || "Authentication Failed !!");
