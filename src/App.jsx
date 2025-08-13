@@ -5,15 +5,19 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ExpenseTracker from "./components/ExpenseTracker";
 import UpdateProfile from "./components/UpdateProfile";
 import VerifyYourMail from "./components/VerifyYourMail";
+import Header from "./components/Header";
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Auth />} />
-      <Route path="/expense" element={<ExpenseTracker />} />
-      <Route path="/profile" element={<UpdateProfile />} />
-      <Route path="/verify" element={<VerifyYourMail />} />
-    </Routes>
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Auth />} />
+        <Route path="/expense" element={<ExpenseTracker />} />
+        <Route path="/profile" element={<UpdateProfile />} />
+        <Route path="/verify" element={<VerifyYourMail />} />
+      </Routes>
+    </>
   );
 };
 

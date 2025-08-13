@@ -56,6 +56,8 @@ export default function VerifyEmailButton() {
     }
   };
 
+  console.log(idToken);
+
   return (
     <div className="mt-4">
       <button
