@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../../store/auth-context";
+import AuthContext from "../store/auth-context";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -63,10 +63,12 @@ const Auth = () => {
       });
   };
 
+  const handleForgetPassword = () => {
+    navigate("/forget-password");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center">
-      {/* Navbar */}
-
       {/* Signup Form */}
       <div className="flex flex-col items-center justify-center flex-1">
         <div className="bg-white border border-gray-300 shadow-sm rounded-sm p-8 w-80 relative z-10">
@@ -96,6 +98,15 @@ const Auth = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
+            )}
+            {isLogin && (
+              <button
+                onClick={handleForgetPassword}
+                type="button"
+                className="text-sm cursor-pointer"
+              >
+                forget password?
+              </button>
             )}
             <button
               type="submit"
