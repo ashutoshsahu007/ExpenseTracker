@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaGithub, FaGlobe } from "react-icons/fa";
 import AuthContext from "../store/auth-context";
 
@@ -7,10 +7,33 @@ export default function UpdateProfile() {
   const [photoURL, setPhotoURL] = useState("");
   const authCtx = useContext(AuthContext);
 
-  const handleUpdate = async () => {
-    alert(`Name: ${fullName}\nPhoto URL: ${photoURL}`);
+  useEffect(() => {
+    const fetchuserDetails = async () => {
+      const idToken = authCtx.token;
+      fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyANaJRxFmDFxPmAhRakHBVQMmCVOZroo-M",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idToken,
+          }),
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setFullName(data.users[0].displayName);
+          setPhotoURL(data.users[0].photoUrl);
+        })
+        .catch((err) => console.log(err.message));
+    };
+    fetchuserDetails();
+  }, []);
 
-    const apiKey = "YOUR_FIREBASE_API_KEY";
+  console.log(authCtx.token, "token hai bhai ");
+
+  const handleUpdate = async () => {
     const idToken = authCtx.token; // Must be a valid, non-expired token
 
     const res = await fetch(
@@ -28,6 +51,7 @@ export default function UpdateProfile() {
     );
 
     const data = await res.json();
+    console.log(data);
     if (res.ok) {
       console.log("Profile updated:", data.displayName, data.photoUrl);
     } else {
