@@ -5,17 +5,18 @@ export default function ExpenseTracker() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Food");
   const [expenses, setExpenses] = useState([]);
+  const [editId, setEditId] = useState(null); // Track expense being edited
 
   const categories = ["Food", "Petrol", "Salary", "Shopping", "Travel"];
 
-  const FIREBASE_URL =
-    "https://expensetracker-4b1e4-default-rtdb.firebaseio.com/expenses.json";
+  const FIREBASE_BASE_URL =
+    "https://expensetracker-4b1e4-default-rtdb.firebaseio.com/expenses";
 
   // Fetch expenses from Firebase on page load
   useEffect(() => {
     async function fetchExpenses() {
       try {
-        const res = await fetch(FIREBASE_URL);
+        const res = await fetch(`${FIREBASE_BASE_URL}.json`);
         if (!res.ok) throw new Error("Failed to fetch expenses");
         const data = await res.json();
 
@@ -33,24 +34,44 @@ export default function ExpenseTracker() {
     fetchExpenses();
   }, []);
 
-  // Add expense to Firebase
+  // Add or Update expense in Firebase
   const handleAddExpense = async (e) => {
     e.preventDefault();
     if (!amount || !description) return;
 
-    const newExpense = { amount, description, category };
+    const expenseData = { amount, description, category };
 
     try {
-      const res = await fetch(FIREBASE_URL, {
-        method: "POST",
-        body: JSON.stringify(newExpense),
-        headers: { "Content-Type": "application/json" },
-      });
+      if (editId) {
+        // UPDATE (PUT request)
+        const res = await fetch(`${FIREBASE_BASE_URL}/${editId}.json`, {
+          method: "PUT",
+          body: JSON.stringify(expenseData),
+          headers: { "Content-Type": "application/json" },
+        });
 
-      if (!res.ok) throw new Error("Failed to add expense");
+        if (!res.ok) throw new Error("Failed to update expense");
 
-      const data = await res.json();
-      setExpenses([{ id: data.name, ...newExpense }, ...expenses]);
+        setExpenses((prev) =>
+          prev.map((exp) =>
+            exp.id === editId ? { id: editId, ...expenseData } : exp
+          )
+        );
+
+        setEditId(null);
+      } else {
+        // CREATE (POST request)
+        const res = await fetch(`${FIREBASE_BASE_URL}.json`, {
+          method: "POST",
+          body: JSON.stringify(expenseData),
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!res.ok) throw new Error("Failed to add expense");
+
+        const data = await res.json();
+        setExpenses([{ id: data.name, ...expenseData }, ...expenses]);
+      }
 
       setAmount("");
       setDescription("");
@@ -58,6 +79,30 @@ export default function ExpenseTracker() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  // Delete expense
+  const handleDeleteExpense = async (id) => {
+    try {
+      const res = await fetch(`${FIREBASE_BASE_URL}/${id}.json`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete expense");
+
+      setExpenses((prev) => prev.filter((exp) => exp.id !== id));
+      console.log("Expense successfully deleted");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Start editing expense
+  const handleEditExpense = (exp) => {
+    setAmount(exp.amount);
+    setDescription(exp.description);
+    setCategory(exp.category);
+    setEditId(exp.id);
   };
 
   return (
@@ -104,7 +149,7 @@ export default function ExpenseTracker() {
             type="submit"
             className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
           >
-            Add Expense
+            {editId ? "Update Expense" : "Add Expense"}
           </button>
         </form>
 
@@ -124,7 +169,21 @@ export default function ExpenseTracker() {
                     <p className="font-medium">{exp.description}</p>
                     <p className="text-sm text-gray-500">{exp.category}</p>
                   </div>
-                  <p className="font-bold text-blue-500">₹{exp.amount}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold text-blue-500">₹{exp.amount}</p>
+                    <button
+                      onClick={() => handleEditExpense(exp)}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteExpense(exp.id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
