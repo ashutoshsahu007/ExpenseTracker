@@ -1,76 +1,75 @@
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setExpenses,
+  addExpense,
+  updateExpense,
+  deleteExpense,
+  setEditId,
+  clearEditId,
+  selectTotalExpenses,
+} from "../store/expenseSlice.jsx";
 
 export default function ExpenseTracker() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Food");
-  const [expenses, setExpenses] = useState([]);
-  const [editId, setEditId] = useState(null); // Track expense being edited
+
+  const dispatch = useDispatch();
+  const expenses = useSelector((state) => state.expenses.list);
+  const editId = useSelector((state) => state.expenses.editId);
+
+  const totalExpenses = useSelector(selectTotalExpenses);
 
   const categories = ["Food", "Petrol", "Salary", "Shopping", "Travel"];
-
   const FIREBASE_BASE_URL =
     "https://expensetracker-4b1e4-default-rtdb.firebaseio.com/expenses";
 
-  // Fetch expenses from Firebase on page load
+  // Fetch expenses
   useEffect(() => {
     async function fetchExpenses() {
       try {
         const res = await fetch(`${FIREBASE_BASE_URL}.json`);
-        if (!res.ok) throw new Error("Failed to fetch expenses");
         const data = await res.json();
-
         if (data) {
-          const loadedExpenses = Object.entries(data).map(([id, exp]) => ({
+          const loaded = Object.entries(data).map(([id, exp]) => ({
             id,
             ...exp,
           }));
-          setExpenses(loadedExpenses.reverse()); // newest first
+          dispatch(setExpenses(loaded.reverse()));
         }
       } catch (err) {
         console.error(err);
       }
     }
     fetchExpenses();
-  }, []);
+  }, [dispatch]);
 
-  // Add or Update expense in Firebase
+  // Add / Update expense
   const handleAddExpense = async (e) => {
     e.preventDefault();
     if (!amount || !description) return;
-
     const expenseData = { amount, description, category };
 
     try {
       if (editId) {
-        // UPDATE (PUT request)
-        const res = await fetch(`${FIREBASE_BASE_URL}/${editId}.json`, {
+        // UPDATE
+        await fetch(`${FIREBASE_BASE_URL}/${editId}.json`, {
           method: "PUT",
           body: JSON.stringify(expenseData),
           headers: { "Content-Type": "application/json" },
         });
-
-        if (!res.ok) throw new Error("Failed to update expense");
-
-        setExpenses((prev) =>
-          prev.map((exp) =>
-            exp.id === editId ? { id: editId, ...expenseData } : exp
-          )
-        );
-
-        setEditId(null);
+        dispatch(updateExpense({ id: editId, data: expenseData }));
+        dispatch(clearEditId());
       } else {
-        // CREATE (POST request)
+        // CREATE
         const res = await fetch(`${FIREBASE_BASE_URL}.json`, {
           method: "POST",
           body: JSON.stringify(expenseData),
           headers: { "Content-Type": "application/json" },
         });
-
-        if (!res.ok) throw new Error("Failed to add expense");
-
         const data = await res.json();
-        setExpenses([{ id: data.name, ...expenseData }, ...expenses]);
+        dispatch(addExpense({ id: data.name, ...expenseData }));
       }
 
       setAmount("");
@@ -84,25 +83,19 @@ export default function ExpenseTracker() {
   // Delete expense
   const handleDeleteExpense = async (id) => {
     try {
-      const res = await fetch(`${FIREBASE_BASE_URL}/${id}.json`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) throw new Error("Failed to delete expense");
-
-      setExpenses((prev) => prev.filter((exp) => exp.id !== id));
-      console.log("Expense successfully deleted");
+      await fetch(`${FIREBASE_BASE_URL}/${id}.json`, { method: "DELETE" });
+      dispatch(deleteExpense(id));
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Start editing expense
+  // Edit expense
   const handleEditExpense = (exp) => {
     setAmount(exp.amount);
     setDescription(exp.description);
     setCategory(exp.category);
-    setEditId(exp.id);
+    dispatch(setEditId(exp.id));
   };
 
   return (
@@ -123,7 +116,6 @@ export default function ExpenseTracker() {
             className="w-full border rounded px-3 py-2 outline-none focus:ring focus:ring-blue-200"
             required
           />
-
           <input
             type="text"
             placeholder="Description"
@@ -132,19 +124,15 @@ export default function ExpenseTracker() {
             className="w-full border rounded px-3 py-2 outline-none focus:ring focus:ring-blue-200"
             required
           />
-
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             className="w-full border rounded px-3 py-2 outline-none focus:ring focus:ring-blue-200"
           >
             {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
+              <option key={cat}>{cat}</option>
             ))}
           </select>
-
           <button
             type="submit"
             className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
@@ -152,6 +140,14 @@ export default function ExpenseTracker() {
             {editId ? "Update Expense" : "Add Expense"}
           </button>
         </form>
+
+        {totalExpenses > 10000 && (
+          <div className="mt-4 text-center">
+            <button className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+              Activate Premium
+            </button>
+          </div>
+        )}
 
         {/* Expense List */}
         <div className="mt-6">

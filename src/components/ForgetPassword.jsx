@@ -1,12 +1,14 @@
 // ForgotPassword.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const token = useSelector((state) => state.auth.token);
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
@@ -59,7 +61,7 @@ export default function ForgotPassword() {
             required
           />
           <p className="text-center text-sm mt-4">
-            Already a user?{" "}
+            Already a user?
             <Link to="/" className="text-orange-300 hover:underline">
               Login
             </Link>

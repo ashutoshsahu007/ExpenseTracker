@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../store/auth-context";
+import { useDispatch } from "react-redux";
+import { authActions } from "../store/authSlice";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -8,7 +9,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
-  const authCtx = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,7 +24,6 @@ const Auth = () => {
     } else {
       url =
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyANaJRxFmDFxPmAhRakHBVQMmCVOZroo-M";
-
       if (!email || !password || !confirmPassword) {
         alert("Please fill in all fields");
         return;
@@ -55,7 +55,15 @@ const Auth = () => {
       })
       .then((data) => {
         console.log(data);
-        isLogin && authCtx.login(data.idToken);
+
+        // Save token + userId in Redux
+        dispatch(
+          authActions.login({
+            token: data.idToken,
+            userId: data.localId,
+          })
+        );
+
         isLogin && navigate("/expense");
       })
       .catch((error) => {
