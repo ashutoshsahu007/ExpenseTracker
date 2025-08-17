@@ -1,15 +1,16 @@
-import React, { useContext } from "react";
-import AuthContext from "../store/auth-context";
-import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { authActions } from "../store/authSlice";
 
 const Header = () => {
-  const authCtx = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
   const handleLogout = () => {
-    authCtx.logout();
+    dispatch(authActions.logout());
     navigate("/");
   };
+
   return (
     <nav className="w-full sticky top-0 z-50 flex justify-between items-center px-6 py-3 bg-white shadow-sm">
       <div className="flex items-center space-x-2">

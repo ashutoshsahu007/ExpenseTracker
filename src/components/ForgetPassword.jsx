@@ -1,14 +1,11 @@
-// ForgotPassword.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const token = useSelector((state) => state.auth.token);
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
@@ -69,7 +66,7 @@ export default function ForgotPassword() {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+            className="w-full bg-blue-500 cursor-pointer text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
             disabled={loading}
           >
             {loading ? "Sending..." : "Send Reset Link"}

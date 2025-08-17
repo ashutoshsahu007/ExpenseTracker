@@ -1,15 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import { FaGithub, FaGlobe } from "react-icons/fa";
-import AuthContext from "../store/auth-context";
+import { useSelector } from "react-redux";
 
 export default function UpdateProfile() {
   const [fullName, setFullName] = useState("");
   const [photoURL, setPhotoURL] = useState("");
-  const authCtx = useContext(AuthContext);
+
+  const token = useSelector((state) => state.auth.token);
+  console.log("tokennnnnnn", token);
 
   useEffect(() => {
     const fetchuserDetails = async () => {
-      const idToken = authCtx.token;
+      const idToken = token;
       fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyANaJRxFmDFxPmAhRakHBVQMmCVOZroo-M",
         {
@@ -31,10 +33,8 @@ export default function UpdateProfile() {
     fetchuserDetails();
   }, []);
 
-  console.log(authCtx.token, "token hai bhai ");
-
   const handleUpdate = async () => {
-    const idToken = authCtx.token; // Must be a valid, non-expired token
+    const idToken = token;
 
     const res = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyANaJRxFmDFxPmAhRakHBVQMmCVOZroo-M`,
@@ -89,7 +89,7 @@ export default function UpdateProfile() {
             <h2 className="text-lg font-bold">Contact Details</h2>
             <button
               onClick={handleCancel}
-              className="text-red-500 font-semibold border border-red-300 rounded px-3 py-1 hover:bg-red-50"
+              className="text-red-500 cursor-pointer font-semibold border border-red-300 rounded px-3 py-1 hover:bg-red-50"
             >
               Cancel
             </button>
@@ -126,7 +126,7 @@ export default function UpdateProfile() {
           <div className="mt-6">
             <button
               onClick={handleUpdate}
-              className="bg-red-300 text-white px-4 py-2 rounded hover:bg-red-400"
+              className="bg-red-300 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-400"
             >
               Update
             </button>

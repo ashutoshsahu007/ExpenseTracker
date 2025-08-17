@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { authActions } from "../store/authSlice";
@@ -118,7 +118,7 @@ const Auth = () => {
             )}
             <button
               type="submit"
-              className="w-full curspointer bg-blue-500 hover:bg-blue-600 text-white rounded-full py-2"
+              className="w-full cursor-pointer bg-blue-500 hover:bg-blue-600 text-white rounded-full py-2"
             >
               {isLogin ? "LogIn" : "SignUp"}
             </button>

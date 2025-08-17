@@ -9,6 +9,7 @@ import {
   clearEditId,
   selectTotalExpenses,
 } from "../store/expenseSlice.jsx";
+import { activatePremium, toggleTheme } from "../store/themeSlice.jsx";
 
 export default function ExpenseTracker() {
   const [amount, setAmount] = useState("");
@@ -18,8 +19,9 @@ export default function ExpenseTracker() {
   const dispatch = useDispatch();
   const expenses = useSelector((state) => state.expenses.list);
   const editId = useSelector((state) => state.expenses.editId);
-
   const totalExpenses = useSelector(selectTotalExpenses);
+
+  const { darkMode, premiumActivated } = useSelector((state) => state.theme);
 
   const categories = ["Food", "Petrol", "Salary", "Shopping", "Travel"];
   const FIREBASE_BASE_URL =
@@ -98,15 +100,47 @@ export default function ExpenseTracker() {
     dispatch(setEditId(exp.id));
   };
 
+  const handleDownloadCSV = () => {
+    if (expenses.length === 0) {
+      alert("No expenses to download!");
+      return;
+    }
+
+    // CSV header
+    let csv = "Description,Category,Amount\n";
+
+    // Add each expense row
+    expenses.forEach((exp) => {
+      csv += `${exp.description},${exp.category},${exp.amount}\n`;
+    });
+
+    // Create a blob and download
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "expenses.csv"; // file name
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div
+      className={`min-h-screen p-4 ${
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-black"
+      }`}
+    >
       <div className="max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-center mb-6">Expense Tracker</h1>
 
         {/* Expense Form */}
         <form
           onSubmit={handleAddExpense}
-          className="bg-white p-4 rounded shadow space-y-4"
+          className={`p-4 rounded shadow space-y-4 ${
+            darkMode ? "bg-gray-800" : "bg-white"
+          }`}
         >
           <input
             type="number"
@@ -135,16 +169,43 @@ export default function ExpenseTracker() {
           </select>
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
+            className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 cursor-pointer"
           >
             {editId ? "Update Expense" : "Add Expense"}
           </button>
         </form>
 
+        {/* Premium Button */}
         {totalExpenses > 10000 && (
           <div className="mt-4 text-center">
-            <button className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+            <button
+              onClick={() => dispatch(activatePremium())}
+              className="bg-purple-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-purple-700"
+            >
               Activate Premium
+            </button>
+          </div>
+        )}
+
+        {/* Dark Mode Toggle */}
+        {premiumActivated && totalExpenses > 10000 && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => dispatch(toggleTheme())}
+              className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Toggle {darkMode ? "Light" : "Dark"} Mode
+            </button>
+          </div>
+        )}
+
+        {expenses.length > 0 && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={handleDownloadCSV}
+              className="bg-indigo-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-indigo-700"
+            >
+              Download File (CSV)
             </button>
           </div>
         )}
@@ -159,7 +220,9 @@ export default function ExpenseTracker() {
               {expenses.map((exp) => (
                 <li
                   key={exp.id}
-                  className="bg-white p-3 rounded shadow flex justify-between items-center"
+                  className={`p-3 rounded shadow flex justify-between items-center ${
+                    darkMode ? "bg-gray-800" : "bg-white"
+                  }`}
                 >
                   <div>
                     <p className="font-medium">{exp.description}</p>
@@ -169,13 +232,13 @@ export default function ExpenseTracker() {
                     <p className="font-bold text-blue-500">₹{exp.amount}</p>
                     <button
                       onClick={() => handleEditExpense(exp)}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                      className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 cursor-pointer"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteExpense(exp.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 cursor-pointer"
                     >
                       Delete
                     </button>

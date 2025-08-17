@@ -1,13 +1,13 @@
 import { useContext, useState } from "react";
-import AuthContext from "../store/auth-context";
+
+import { useSelector } from "react-redux";
 
 export default function VerifyEmailButton() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const authCtx = useContext(AuthContext);
-  const idToken = authCtx.token;
+  const idToken = useSelector((state) => state.auth.token);
 
   const sendVerificationEmail = async () => {
     setLoading(true);
