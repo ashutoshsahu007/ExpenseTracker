@@ -1,25 +1,56 @@
-import React from "react";
 import "./App.css";
 import Auth from "./components/Auth";
-import { Routes, Route } from "react-router-dom";
-import UpdateProfile from "./components/UpdateProfile";
-import VerifyYourMail from "./components/VerifyYourMail";
-import Header from "./components/Header";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ForgotPassword from "./components/ForgetPassword";
-import ExpenseTracker from "./components/ExpenseTracker";
-import Profile from "./components/Profile";
+import ExpensePage from "./pages/ExpensePage";
+import { useSelector } from "react-redux";
+import NotFound from "./components/NotFound";
+import Verify from "./pages/Verify";
+import UpdateProfilePage from "./pages/UpdateProfilePage";
+import ProfilePage from "./pages/ProfilePage";
 
 const App = () => {
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const location = useLocation();
+
+  console.log(isLoggedIn, "isLoggedinapp");
+
   return (
     <>
-      <Header />
       <Routes>
-        <Route path="/" element={<Auth />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile-update" element={<UpdateProfile />} />
-        <Route path="/verify" element={<VerifyYourMail />} />
-        <Route path="/forget-password" element={<ForgotPassword />} />
-        <Route path="/expense" element={<ExpenseTracker />} />
+        <Route
+          path="/"
+          element={!isLoggedIn ? <Auth /> : <Navigate to="/expense" replace />}
+        />
+        <Route
+          path="/expense"
+          element={isLoggedIn ? <ExpensePage /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/profile"
+          element={isLoggedIn ? <ProfilePage /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/profile-update"
+          element={
+            isLoggedIn ? <UpdateProfilePage /> : <Navigate to="/" replace />
+          }
+        />
+        <Route
+          path="/verify"
+          element={isLoggedIn ? <Verify /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/forget-password"
+          element={
+            !isLoggedIn ? (
+              <ForgotPassword />
+            ) : (
+              <Navigate to={location.pathname} replace />
+            )
+          }
+        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

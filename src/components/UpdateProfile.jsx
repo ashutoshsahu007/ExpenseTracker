@@ -7,7 +7,6 @@ export default function UpdateProfile() {
   const [photoURL, setPhotoURL] = useState("");
 
   const token = useSelector((state) => state.auth.token);
-  console.log("tokennnnnnn", token);
 
   useEffect(() => {
     const fetchuserDetails = async () => {

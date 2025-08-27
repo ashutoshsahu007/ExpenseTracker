@@ -10,6 +10,15 @@ import {
   selectTotalExpenses,
 } from "../store/expenseSlice.jsx";
 import { activatePremium, toggleTheme } from "../store/themeSlice.jsx";
+import {
+  Wallet,
+  PlusCircle,
+  FileDown,
+  Moon,
+  Sun,
+  Edit,
+  Trash,
+} from "lucide-react";
 
 export default function ExpenseTracker() {
   const [amount, setAmount] = useState("");
@@ -127,27 +136,22 @@ export default function ExpenseTracker() {
   };
 
   return (
-    <div
-      className={`min-h-screen p-4 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-black"
-      }`}
-    >
-      <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-6">Expense Tracker</h1>
+    <div className="min-h-screen py-10 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 flex flex-col items-center justify-start px-4 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-cyan-200 to-blue-200 rounded-full opacity-20 blur-3xl"></div>
+      </div>
 
-        {/* Expense Form */}
-        <form
-          onSubmit={handleAddExpense}
-          className={`p-4 rounded shadow space-y-4 ${
-            darkMode ? "bg-gray-800" : "bg-white"
-          }`}
-        >
+      {/* Expense Card */}
+      <div className="bg-white/80 backdrop-blur-sm shadow-2xl rounded-3xl p-8 w-full max-w-md border border-white/20 relative z-10">
+        <form onSubmit={handleAddExpense} className="space-y-4">
           <input
             type="number"
             placeholder="Money Spent"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full border rounded px-3 py-2 outline-none focus:ring focus:ring-blue-200"
+            className="w-full pl-4 pr-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
             required
           />
           <input
@@ -155,99 +159,107 @@ export default function ExpenseTracker() {
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border rounded px-3 py-2 outline-none focus:ring focus:ring-blue-200"
+            className="w-full pl-4 pr-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
             required
           />
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full border rounded px-3 py-2 outline-none focus:ring focus:ring-blue-200"
+            className="w-full pl-4 pr-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
           >
             {categories.map((cat) => (
               <option key={cat}>{cat}</option>
             ))}
           </select>
+
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 cursor-pointer"
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl py-3.5 font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer"
           >
             {editId ? "Update Expense" : "Add Expense"}
+            <PlusCircle className="w-4 h-4" />
           </button>
         </form>
 
-        {/* Premium Button */}
+        {/* Premium + Theme */}
         {totalExpenses > 10000 && (
-          <div className="mt-4 text-center">
+          <div className="mt-6 flex flex-col gap-3">
             <button
               onClick={() => dispatch(activatePremium())}
-              className="bg-purple-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-purple-700"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl py-3 font-semibold transition-all duration-200 shadow-lg cursor-pointer"
             >
               Activate Premium
             </button>
-          </div>
-        )}
 
-        {/* Dark Mode Toggle */}
-        {premiumActivated && totalExpenses > 10000 && (
-          <div className="mt-4 text-center">
-            <button
-              onClick={() => dispatch(toggleTheme())}
-              className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Toggle {darkMode ? "Light" : "Dark"} Mode
-            </button>
+            {premiumActivated && (
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl py-3 font-semibold transition-all duration-200 shadow-lg cursor-pointer flex items-center justify-center gap-2"
+              >
+                {darkMode ? (
+                  <>
+                    <Sun className="w-5 h-5" /> Switch to Light Mode
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-5 h-5" /> Switch to Dark Mode
+                  </>
+                )}
+              </button>
+            )}
           </div>
         )}
 
         {expenses.length > 0 && (
-          <div className="mt-4 text-center">
+          <div className="mt-4">
             <button
               onClick={handleDownloadCSV}
-              className="bg-indigo-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-indigo-700"
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl py-3 font-semibold transition-all duration-200 shadow-lg cursor-pointer flex items-center justify-center gap-2"
             >
-              Download File (CSV)
+              <FileDown className="w-5 h-5" /> Download CSV
             </button>
           </div>
         )}
+      </div>
 
-        {/* Expense List */}
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-3">Your Expenses</h2>
-          {expenses.length === 0 ? (
-            <p className="text-gray-500">No expenses yet.</p>
-          ) : (
-            <ul className="space-y-3">
-              {expenses.map((exp) => (
-                <li
-                  key={exp.id}
-                  className={`p-3 rounded shadow flex justify-between items-center ${
-                    darkMode ? "bg-gray-800" : "bg-white"
-                  }`}
-                >
-                  <div>
-                    <p className="font-medium">{exp.description}</p>
-                    <p className="text-sm text-gray-500">{exp.category}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-bold text-blue-500">₹{exp.amount}</p>
-                    <button
-                      onClick={() => handleEditExpense(exp)}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 cursor-pointer"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteExpense(exp.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 cursor-pointer"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+      {/* Expense List */}
+      <div className="mt-8 w-full max-w-md relative z-10">
+        <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          Your Expenses
+        </h2>
+
+        {expenses.length === 0 ? (
+          <p className="text-gray-500">No expenses yet.</p>
+        ) : (
+          <ul className="space-y-3">
+            {expenses.map((exp) => (
+              <li
+                key={exp.id}
+                className="p-4 bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl shadow flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium">{exp.description}</p>
+                  <p className="text-sm text-gray-500">{exp.category}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-indigo-600">₹{exp.amount}</p>
+                  <button
+                    onClick={() => handleEditExpense(exp)}
+                    className="bg-yellow-500 text-white px-2 py-1 rounded-lg hover:bg-yellow-600 cursor-pointer flex items-center gap-1"
+                  >
+                    <Edit className="w-4 h-4" /> Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteExpense(exp.id)}
+                    className="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 cursor-pointer flex items-center gap-1"
+                  >
+                    <Trash className="w-4 h-4" /> Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

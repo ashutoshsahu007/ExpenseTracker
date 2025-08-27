@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 
 import { useSelector } from "react-redux";
 
-export default function VerifyEmailButton() {
+export default function VerifyYourMail() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -64,7 +64,9 @@ export default function VerifyEmailButton() {
         onClick={sendVerificationEmail}
         disabled={loading}
         className={`px-4 py-2 rounded text-white ${
-          loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+          loading
+            ? "bg-gray-400"
+            : "bg-blue-500 cursor-pointer hover:bg-blue-600"
         }`}
       >
         {loading ? "Sending..." : "Verify Email"}
