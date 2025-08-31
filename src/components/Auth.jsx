@@ -58,10 +58,7 @@ const Auth = () => {
       })
       .then((data) => {
         dispatch(
-          authActions.login({
-            token: data.idToken,
-            userId: data.localId,
-          })
+          authActions.login({ token: data.idToken, userId: data.localId })
         );
         !isLogin && alert("SignUp Successfull");
         isLogin && navigate("/expense");

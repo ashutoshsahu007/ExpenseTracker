@@ -1,4 +1,3 @@
-// src/store/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialAuthState = {
@@ -30,24 +29,6 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
       localStorage.removeItem("loginTime");
-    },
-    autoLogin(state) {
-      const storedToken = localStorage.getItem("token");
-      const storedUserId = localStorage.getItem("userId");
-      const storedLoginTime = localStorage.getItem("loginTime");
-
-      if (
-        storedToken &&
-        storedUserId &&
-        storedLoginTime &&
-        Date.now() - storedLoginTime < 5 * 60 * 1000
-      ) {
-        state.token = storedToken;
-        state.userId = storedUserId;
-        state.isLoggedIn = true;
-      } else {
-        localStorage.clear();
-      }
     },
   },
 });

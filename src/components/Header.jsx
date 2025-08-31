@@ -1,15 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { authActions } from "../store/authSlice";
 import { LogOut, User, FileText, CheckCircle, Wallet } from "lucide-react";
+import { authActions } from "../store/authSlice";
 
 const Header = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLogout = () => {
     dispatch(authActions.logout());
-    navigate("/");
   };
 
   return (
@@ -55,7 +53,7 @@ const Header = () => {
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md transition-all duration-200"
+            className="flex items-center gap-1 cursor-pointer px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md transition-all duration-200"
           >
             <LogOut className="w-4 h-4" /> Logout
           </button>

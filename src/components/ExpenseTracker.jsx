@@ -10,15 +10,7 @@ import {
   selectTotalExpenses,
 } from "../store/expenseSlice.jsx";
 import { activatePremium, toggleTheme } from "../store/themeSlice.jsx";
-import {
-  Wallet,
-  PlusCircle,
-  FileDown,
-  Moon,
-  Sun,
-  Edit,
-  Trash,
-} from "lucide-react";
+import { PlusCircle, FileDown, Moon, Sun, Edit, Trash } from "lucide-react";
 
 export default function ExpenseTracker() {
   const [amount, setAmount] = useState("");
@@ -32,7 +24,14 @@ export default function ExpenseTracker() {
 
   const { darkMode, premiumActivated } = useSelector((state) => state.theme);
 
-  const categories = ["Food", "Petrol", "Salary", "Shopping", "Travel"];
+  const categories = [
+    "Food",
+    "Petrol",
+    "Salary",
+    "Shopping",
+    "Travel",
+    "Other",
+  ];
   const FIREBASE_BASE_URL =
     "https://expensetracker-4b1e4-default-rtdb.firebaseio.com/expenses";
 
@@ -42,11 +41,13 @@ export default function ExpenseTracker() {
       try {
         const res = await fetch(`${FIREBASE_BASE_URL}.json`);
         const data = await res.json();
+
         if (data) {
           const loaded = Object.entries(data).map(([id, exp]) => ({
             id,
             ...exp,
           }));
+
           dispatch(setExpenses(loaded.reverse()));
         }
       } catch (err) {
@@ -79,10 +80,10 @@ export default function ExpenseTracker() {
           body: JSON.stringify(expenseData),
           headers: { "Content-Type": "application/json" },
         });
+
         const data = await res.json();
         dispatch(addExpense({ id: data.name, ...expenseData }));
       }
-
       setAmount("");
       setDescription("");
       setCategory("Food");
@@ -136,22 +137,32 @@ export default function ExpenseTracker() {
   };
 
   return (
-    <div className="min-h-screen py-10 bg-gradient-to-br from-indigo-50 via-white to-cyan-50 flex flex-col items-center justify-start px-4 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full opacity-20 blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-cyan-200 to-blue-200 rounded-full opacity-20 blur-3xl"></div>
-      </div>
-
+    <div
+      className={`min-h-screen py-10 flex flex-col items-center justify-start px-4 relative overflow-hidden transition-colors duration-300 ${
+        darkMode
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-100"
+          : "bg-gradient-to-br from-indigo-50 via-white to-cyan-50 text-gray-900"
+      }`}
+    >
       {/* Expense Card */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-2xl rounded-3xl p-8 w-full max-w-md border border-white/20 relative z-10">
+      <div
+        className={`backdrop-blur-sm shadow-2xl rounded-3xl p-8 w-full max-w-md border relative z-10 transition-colors duration-300 ${
+          darkMode
+            ? "bg-gray-800/80 border-gray-700"
+            : "bg-white/80 border-white/20"
+        }`}
+      >
         <form onSubmit={handleAddExpense} className="space-y-4">
           <input
             type="number"
             placeholder="Money Spent"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full pl-4 pr-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
+            className={`w-full pl-4 pr-4 py-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
+              darkMode
+                ? "bg-gray-700 border-gray-600 placeholder-gray-400 text-gray-100"
+                : "bg-gray-50/50 border-gray-200 hover:bg-white text-gray-900"
+            }`}
             required
           />
           <input
@@ -159,13 +170,21 @@ export default function ExpenseTracker() {
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full pl-4 pr-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
+            className={`w-full pl-4 pr-4 py-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
+              darkMode
+                ? "bg-gray-700 border-gray-600 placeholder-gray-400 text-gray-100"
+                : "bg-gray-50/50 border-gray-200 hover:bg-white text-gray-900"
+            }`}
             required
           />
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full pl-4 pr-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
+            className={`w-full pl-4 pr-4 py-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
+              darkMode
+                ? "bg-gray-700 border-gray-600 text-gray-100"
+                : "bg-gray-50/50 border-gray-200 hover:bg-white text-gray-900"
+            }`}
           >
             {categories.map((cat) => (
               <option key={cat}>{cat}</option>
@@ -224,25 +243,39 @@ export default function ExpenseTracker() {
 
       {/* Expense List */}
       <div className="mt-8 w-full max-w-md relative z-10">
-        <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+        <h2
+          className={`text-2xl font-bold mb-4 bg-clip-text text-transparent ${
+            darkMode
+              ? "bg-gradient-to-r from-cyan-400 to-blue-500"
+              : "bg-gradient-to-r from-indigo-600 to-purple-600"
+          }`}
+        >
           Your Expenses
         </h2>
 
         {expenses.length === 0 ? (
-          <p className="text-gray-500">No expenses yet.</p>
+          <p className="text-gray-500 dark:text-gray-400">No expenses yet.</p>
         ) : (
           <ul className="space-y-3">
             {expenses.map((exp) => (
               <li
                 key={exp.id}
-                className="p-4 bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl shadow flex justify-between items-center"
+                className={`p-4 backdrop-blur-sm border rounded-xl shadow flex justify-between items-center transition-colors duration-300 ${
+                  darkMode
+                    ? "bg-gray-800/80 border-gray-700"
+                    : "bg-white/80 border-white/20"
+                }`}
               >
                 <div>
                   <p className="font-medium">{exp.description}</p>
-                  <p className="text-sm text-gray-500">{exp.category}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {exp.category}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <p className="font-bold text-indigo-600">₹{exp.amount}</p>
+                  <p className="font-bold text-indigo-600 dark:text-indigo-400">
+                    ₹{exp.amount}
+                  </p>
                   <button
                     onClick={() => handleEditExpense(exp)}
                     className="bg-yellow-500 text-white px-2 py-1 rounded-lg hover:bg-yellow-600 cursor-pointer flex items-center gap-1"

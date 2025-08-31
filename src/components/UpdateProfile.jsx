@@ -23,7 +23,6 @@ export default function UpdateProfile() {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setFullName(data.users[0].displayName);
           setPhotoURL(data.users[0].photoUrl);
         })
@@ -50,7 +49,7 @@ export default function UpdateProfile() {
     );
 
     const data = await res.json();
-    console.log(data);
+
     if (res.ok) {
       console.log("Profile updated:", data.displayName, data.photoUrl);
     } else {
