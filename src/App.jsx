@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import NotFound from "./components/NotFound";
 import Verify from "./pages/Verify";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
-
 import { useEffect } from "react";
 import { autoLogout } from "./store/authActions";
 

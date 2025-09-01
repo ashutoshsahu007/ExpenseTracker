@@ -141,7 +141,7 @@ export default function ExpenseTracker() {
       className={`min-h-screen py-10 flex flex-col items-center justify-start px-4 relative overflow-hidden transition-colors duration-300 ${
         darkMode
           ? "bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-100"
-          : "bg-gradient-to-br from-indigo-50 via-white to-cyan-50 text-gray-900"
+          : " text-gray-900"
       }`}
     >
       {/* Expense Card */}

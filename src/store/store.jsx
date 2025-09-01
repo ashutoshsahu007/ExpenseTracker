@@ -7,8 +7,13 @@ import { SESSION_DURATION } from "../utils/data";
 const storedToken = localStorage.getItem("token");
 const storedUserId = localStorage.getItem("userId");
 const storedLoginTime = Number(localStorage.getItem("loginTime"));
+const storedMode = localStorage.getItem("darkMode");
+
+console.log(storedMode, "storeddddmoddddde");
 
 let isLoggedIn = false;
+let darkMode = false;
+
 if (
   storedToken &&
   storedUserId &&
@@ -18,11 +23,19 @@ if (
   isLoggedIn = true;
 }
 
+if (storedMode === "true") {
+  darkMode = storedMode;
+  console.log("inside if block man");
+}
+
 const preloadedState = {
   auth: {
     token: storedToken,
     userId: storedUserId,
     isLoggedIn,
+  },
+  theme: {
+    darkMode: darkMode,
   },
 };
 
