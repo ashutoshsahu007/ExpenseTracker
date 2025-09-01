@@ -7,10 +7,8 @@ import {
   deleteExpense,
   setEditId,
   clearEditId,
-  selectTotalExpenses,
 } from "../store/expenseSlice.jsx";
-import { activatePremium, toggleTheme } from "../store/themeSlice.jsx";
-import { PlusCircle, FileDown, Moon, Sun, Edit, Trash } from "lucide-react";
+import { PlusCircle, FileDown, Edit, Trash } from "lucide-react";
 
 export default function ExpenseTracker() {
   const [amount, setAmount] = useState("");
@@ -20,9 +18,11 @@ export default function ExpenseTracker() {
   const dispatch = useDispatch();
   const expenses = useSelector((state) => state.expenses.list);
   const editId = useSelector((state) => state.expenses.editId);
-  const totalExpenses = useSelector(selectTotalExpenses);
+  const totalExpenses = useSelector((state) =>
+    state.expenses.list.reduce((sum, exp) => sum + Number(exp.amount), 0)
+  );
 
-  const { darkMode, premiumActivated } = useSelector((state) => state.theme);
+  const { darkMode } = useSelector((state) => state.theme);
 
   const categories = [
     "Food",
@@ -161,7 +161,7 @@ export default function ExpenseTracker() {
             className={`w-full pl-4 pr-4 py-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
               darkMode
                 ? "bg-gray-700 border-gray-600 placeholder-gray-400 text-gray-100"
-                : "bg-gray-50/50 border-gray-200 hover:bg-white text-gray-900"
+                : "bg-gray-50 border-gray-50  text-gray-900"
             }`}
             required
           />
@@ -173,7 +173,7 @@ export default function ExpenseTracker() {
             className={`w-full pl-4 pr-4 py-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
               darkMode
                 ? "bg-gray-700 border-gray-600 placeholder-gray-400 text-gray-100"
-                : "bg-gray-50/50 border-gray-200 hover:bg-white text-gray-900"
+                : "bg-gray-50 border-gray-200  text-gray-900"
             }`}
             required
           />
@@ -183,7 +183,7 @@ export default function ExpenseTracker() {
             className={`w-full pl-4 pr-4 py-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
               darkMode
                 ? "bg-gray-700 border-gray-600 text-gray-100"
-                : "bg-gray-50/50 border-gray-200 hover:bg-white text-gray-900"
+                : "bg-gray-50 border-gray-200  text-gray-900"
             }`}
           >
             {categories.map((cat) => (
@@ -203,29 +203,9 @@ export default function ExpenseTracker() {
         {/* Premium + Theme */}
         {totalExpenses > 10000 && (
           <div className="mt-6 flex flex-col gap-3">
-            <button
-              onClick={() => dispatch(activatePremium())}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl py-3 font-semibold transition-all duration-200 shadow-lg cursor-pointer"
-            >
-              Activate Premium
+            <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl py-3 font-semibold transition-all duration-200 shadow-lg cursor-pointer">
+              Premium Activated
             </button>
-
-            {premiumActivated && (
-              <button
-                onClick={() => dispatch(toggleTheme())}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl py-3 font-semibold transition-all duration-200 shadow-lg cursor-pointer flex items-center justify-center gap-2"
-              >
-                {darkMode ? (
-                  <>
-                    <Sun className="w-5 h-5" /> Switch to Light Mode
-                  </>
-                ) : (
-                  <>
-                    <Moon className="w-5 h-5" /> Switch to Dark Mode
-                  </>
-                )}
-              </button>
-            )}
           </div>
         )}
 

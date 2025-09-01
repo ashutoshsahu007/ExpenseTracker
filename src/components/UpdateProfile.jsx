@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaGithub, FaGlobe } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
@@ -7,6 +7,7 @@ export default function UpdateProfile() {
   const [photoURL, setPhotoURL] = useState("");
 
   const token = useSelector((state) => state.auth.token);
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
   useEffect(() => {
     const fetchuserDetails = async () => {
@@ -16,9 +17,7 @@ export default function UpdateProfile() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            idToken,
-          }),
+          body: JSON.stringify({ idToken }),
         }
       )
         .then((res) => res.json())
@@ -29,7 +28,7 @@ export default function UpdateProfile() {
         .catch((err) => console.log(err.message));
     };
     fetchuserDetails();
-  }, []);
+  }, [token]);
 
   const handleUpdate = async () => {
     const idToken = token;
@@ -63,18 +62,35 @@ export default function UpdateProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
+      }`}
+    >
       {/* Top Quote */}
-      <p className="italic text-sm p-3 border-b border-gray-300">
-        Winners never quite, Quitters never win.
+      <p
+        className={`italic text-sm p-3 border-b ${
+          darkMode
+            ? "border-gray-700 text-gray-300"
+            : "border-gray-300 text-black"
+        }`}
+      >
+        Winners never quit, Quitters never win.
       </p>
 
       {/* Profile Completion Banner */}
-      <div className="bg-red-100 p-3 text-sm flex justify-between items-center">
+      <div
+        className={`p-3 text-sm flex justify-between items-center ${
+          darkMode ? "bg-gray-800 text-gray-200" : "bg-red-100 text-black"
+        }`}
+      >
         <span>
           Your Profile is <b>64%</b> completed. A complete Profile has higher
           chances of landing a job.
-          <a href="#" className="text-blue-600 ml-1">
+          <a
+            href="#"
+            className={`${darkMode ? "text-indigo-400" : "text-blue-600"} ml-1`}
+          >
             Complete now
           </a>
         </span>
@@ -82,12 +98,22 @@ export default function UpdateProfile() {
 
       {/* Form Section */}
       <div className="flex justify-center mt-8">
-        <div className="w-3/4 border p-6 rounded-md">
+        <div
+          className={`w-3/4 border p-6 rounded-md ${
+            darkMode
+              ? "border-gray-700 bg-gray-800 text-white"
+              : "border-gray-300 bg-white text-black"
+          }`}
+        >
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold">Contact Details</h2>
             <button
               onClick={handleCancel}
-              className="text-red-500 cursor-pointer font-semibold border border-red-300 rounded px-3 py-1 hover:bg-red-50"
+              className={`cursor-pointer font-semibold border rounded px-3 py-1 transition ${
+                darkMode
+                  ? "text-red-400 border-red-500 hover:bg-red-900"
+                  : "text-red-500 border-red-300 hover:bg-red-50"
+              }`}
             >
               Cancel
             </button>
@@ -103,7 +129,11 @@ export default function UpdateProfile() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="border border-gray-400 rounded px-2 py-1 flex-1"
+                className={`rounded px-2 py-1 flex-1 border ${
+                  darkMode
+                    ? "bg-gray-900 border-gray-600 text-white"
+                    : "bg-white border-gray-400 text-black"
+                }`}
               />
             </div>
 
@@ -115,7 +145,11 @@ export default function UpdateProfile() {
                 type="text"
                 value={photoURL}
                 onChange={(e) => setPhotoURL(e.target.value)}
-                className="border border-gray-400 rounded px-2 py-1 flex-1"
+                className={`rounded px-2 py-1 flex-1 border ${
+                  darkMode
+                    ? "bg-gray-900 border-gray-600 text-white"
+                    : "bg-white border-gray-400 text-black"
+                }`}
               />
             </div>
           </div>
@@ -124,13 +158,21 @@ export default function UpdateProfile() {
           <div className="mt-6">
             <button
               onClick={handleUpdate}
-              className="bg-red-300 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-400"
+              className={`px-4 py-2 rounded cursor-pointer transition ${
+                darkMode
+                  ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                  : "bg-red-300 hover:bg-red-400 text-white"
+              }`}
             >
               Update
             </button>
           </div>
 
-          <hr className="mt-6" />
+          <hr
+            className={`mt-6 ${
+              darkMode ? "border-gray-700" : "border-gray-300"
+            }`}
+          />
         </div>
       </div>
     </div>

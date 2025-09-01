@@ -1,5 +1,4 @@
-import { useContext, useState } from "react";
-
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function VerifyYourMail() {
@@ -8,6 +7,7 @@ export default function VerifyYourMail() {
   const [error, setError] = useState("");
 
   const idToken = useSelector((state) => state.auth.token);
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
   const sendVerificationEmail = async () => {
     setLoading(true);
@@ -31,7 +31,6 @@ export default function VerifyYourMail() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle possible errors from Firebase docs
         switch (data.error?.message) {
           case "INVALID_ID_TOKEN":
             throw new Error("Your session has expired. Please log in again.");
@@ -57,21 +56,35 @@ export default function VerifyYourMail() {
   };
 
   return (
-    <div className="mt-4">
+    <div
+      className={`p-4   ${
+        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+      }`}
+    >
       <button
         onClick={sendVerificationEmail}
         disabled={loading}
-        className={`px-4 py-2 rounded text-white ${
+        className={`px-4 py-2 rounded text-white transition-colors ${
           loading
             ? "bg-gray-400"
-            : "bg-blue-500 cursor-pointer hover:bg-blue-600"
+            : darkMode
+            ? "bg-blue-600 hover:bg-blue-700"
+            : "bg-blue-500 hover:bg-blue-600"
         }`}
       >
         {loading ? "Sending..." : "Verify Email"}
       </button>
 
-      {message && <p className="mt-2 text-green-600">{message}</p>}
-      {error && <p className="mt-2 text-red-600">{error}</p>}
+      {message && (
+        <p className={`mt-2 ${darkMode ? "text-green-400" : "text-green-600"}`}>
+          {message}
+        </p>
+      )}
+      {error && (
+        <p className={`mt-2 ${darkMode ? "text-red-400" : "text-red-600"}`}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -40,6 +40,3 @@ export const {
   clearEditId,
 } = expenseSlice.actions;
 export default expenseSlice.reducer;
-
-export const selectTotalExpenses = (state) =>
-  state.expenses.list.reduce((sum, exp) => sum + Number(exp.amount), 0);

@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import NotFound from "./components/NotFound";
 import Verify from "./pages/Verify";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
-import ProfilePage from "./pages/ProfilePage";
+
 import { useEffect } from "react";
 import { autoLogout } from "./store/authActions";
 
@@ -17,7 +17,6 @@ const App = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      console.log("usefcaddee");
       dispatch(autoLogout());
     }
   }, [isLoggedIn, dispatch]);
@@ -35,10 +34,7 @@ const App = () => {
         path="/expense"
         element={isLoggedIn ? <ExpensePage /> : <Navigate to="/" replace />}
       />
-      <Route
-        path="/profile"
-        element={isLoggedIn ? <ProfilePage /> : <Navigate to="/" replace />}
-      />
+
       <Route
         path="/profile-update"
         element={
